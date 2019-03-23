@@ -21,6 +21,12 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>modules-blog-diary-api</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>modules-blog-spring</artifactId>
+		</dependency>
+
 	</dependencies>
 	
 </project>

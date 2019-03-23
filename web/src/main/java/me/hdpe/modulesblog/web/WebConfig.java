@@ -1,5 +1,7 @@
 package me.hdpe.modulesblog.web;
 
+import me.hdpe.modulesblog.spring.ExportedConfiguration;
+import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
@@ -12,11 +14,7 @@ import org.springframework.context.annotation.Import;
 @Configuration
 @ComponentScan
 @Import({
-	DispatcherServletAutoConfiguration.class,
-	EmbeddedServletContainerAutoConfiguration.class,
-	HttpMessageConvertersAutoConfiguration.class,
-	ServerPropertiesAutoConfiguration.class,
-	WebMvcAutoConfiguration.class
+		ExportedConfiguration.class
 })
 public class WebConfig {
 	

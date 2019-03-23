@@ -25,7 +25,7 @@ class ExportedBeanPostProcessor implements BeanPostProcessor {
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName)
 			throws BeansException {
-		if (hasExportedAnnotation(beanName)) {
+		if (beanName.endsWith("Controller") || hasExportedAnnotation(beanName)) {
 			ConfigurableListableBeanFactory parent = getParentBeanFactory();
 
 			if (parent != null) {
@@ -45,11 +45,12 @@ class ExportedBeanPostProcessor implements BeanPostProcessor {
 			return false;
 		}
 
-		if (!(bd.getSource() instanceof StandardMethodMetadata)) {
+		Object source = bd.getSource();
+		if (!(source instanceof StandardMethodMetadata)) {
 			return false;
 		}
 		
-		return ((StandardMethodMetadata) bd.getSource())
+		return ((StandardMethodMetadata) source)
 				.isAnnotated(Exported.class.getName());
 	}
 
