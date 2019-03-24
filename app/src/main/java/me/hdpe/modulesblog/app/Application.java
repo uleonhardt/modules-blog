@@ -11,8 +11,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @SpringBootApplication
@@ -23,13 +26,12 @@ public class Application {
                 .sources(Application.class).web(WebApplicationType.SERVLET)
                 .child(DiaryConfig.class).web(WebApplicationType.NONE)
                 .sibling(WebConfig.class).web(WebApplicationType.NONE)
-                .listeners(new EventListener())
+                .listeners(new RegisterControllersFromChildContextsListeners())
                 .run(args);
     }
 
 
-    // TODO - Avoid duplicate registration of /ping and /diary. They are already registered the first time round.
-    static class EventListener implements ApplicationListener<ApplicationEvent> {
+    static class RegisterControllersFromChildContextsListeners implements ApplicationListener<ApplicationEvent> {
         @Override
         public void onApplicationEvent(ApplicationEvent applicationEvent) {
             if (applicationEvent instanceof ApplicationReadyEvent) {
@@ -38,7 +40,13 @@ public class Application {
                 if (parent != null) {
                     Map<String, RequestMappingHandlerMapping> beansOfType = parent.getBeansOfType(RequestMappingHandlerMapping.class);
                     beansOfType
-                            .forEach((k, v) -> v.afterPropertiesSet());
+                            .forEach((k, v) -> {
+                                List<RequestMappingInfo> requestMappingInfos = new ArrayList<>(v.getHandlerMethods().keySet());
+                                // To avoid errors due to duplicate mapping registrations from Controllers in parent context
+                                requestMappingInfos.forEach((ki) -> v.unregisterMapping(ki));
+                                // This goes through the context and adds mappings for all the Controller beans
+                                v.afterPropertiesSet();
+                            });
                 }
             }
         }
