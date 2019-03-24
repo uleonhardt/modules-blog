@@ -1,29 +1,16 @@
 package me.hdpe.modulesblog.app;
 
 import me.hdpe.modulesblog.diary.service.DiaryConfig;
-import me.hdpe.modulesblog.spring.ExportedConfiguration;
-import me.hdpe.modulesblog.web.DiaryController;
 import me.hdpe.modulesblog.web.WebConfig;
-
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.web.*;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.web.servlet.HandlerAdapter;
-import org.springframework.web.servlet.HandlerMapping;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.util.Map;
@@ -32,9 +19,11 @@ import java.util.Map;
 public class Application {
     public static void main(String[] args) {
         new SpringApplicationBuilder()
-                .sources(Application.class).contextClass(AnnotationConfigEmbeddedWebApplicationContext.class).web(true)
-                .child(DiaryConfig.class).web(false)
-                .sibling(WebConfig.class).web(false).listeners(new EventListener())
+                .contextClass(AnnotationConfigServletWebServerApplicationContext.class)
+                .sources(Application.class).web(WebApplicationType.SERVLET)
+                .child(DiaryConfig.class).web(WebApplicationType.NONE)
+                .sibling(WebConfig.class).web(WebApplicationType.NONE)
+                .listeners(new EventListener())
                 .run(args);
     }
 
